@@ -51,6 +51,37 @@ test('documentation checks reject broken links and PNG metadata while accepting 
   assert.throws(() => inspectPNG(withMetadata), /metadata/);
 });
 
+test('packaged README and CHANGELOG may differ only by links pointed at the public repository', () => {
+  const { repositoryPrefixes, sameAsSource } = require('../scripts/check-repository.cjs');
+  const repo = { repository: { url: 'https://github.com/example-owner/example-repo.git' } };
+  const prefixes = repositoryPrefixes(repo);
+  assert.deepEqual(prefixes, [
+    'https://github.com/example-owner/example-repo/raw/HEAD/',
+    'https://github.com/example-owner/example-repo/blob/HEAD/',
+  ]);
+  assert.deepEqual(repositoryPrefixes({ repository: 'https://gitlab.com/a/b' }), []);
+  assert.deepEqual(repositoryPrefixes({}), []);
+  const source = Buffer.from(
+    '<img src="docs/a.png"> See [guide](docs/GUIDE.md) and [top](#top).\n',
+  );
+  const packaged = (text) => Buffer.from(text);
+  const rewritten =
+    '<img src="https://github.com/example-owner/example-repo/raw/HEAD/docs/a.png"> See ' +
+    '[guide](https://github.com/example-owner/example-repo/blob/HEAD/docs/GUIDE.md) and [top](#top).\n';
+  assert(sameAsSource('README.md', source, source, prefixes), 'identical bytes');
+  assert(sameAsSource('README.md', packaged(rewritten), source, prefixes), 'only rewritten links');
+  assert(sameAsSource('CHANGELOG.md', packaged(rewritten), source, prefixes));
+  // Anything beyond the rewrite, another file, or no known repository is rejected.
+  assert(!sameAsSource('README.md', packaged(rewritten + 'extra'), source, prefixes));
+  assert(
+    !sameAsSource('README.md', packaged(rewritten.replace('guide', 'gu1de')), source, prefixes),
+  );
+  assert(!sameAsSource('src/extension.js', packaged(rewritten), source, prefixes));
+  assert(!sameAsSource('README.md', packaged(rewritten), source, []));
+  const other = rewritten.replaceAll('example-owner', 'someone-else');
+  assert(!sameAsSource('README.md', packaged(other), source, prefixes), 'another repository');
+});
+
 test('archive validation rejects omitted, extra and changed source files', async (t) => {
   const { ZipFile } = require('yazl');
   const { pipeline } = require('node:stream/promises');

@@ -15,8 +15,8 @@ async function main() {
       cwd: root,
       packagePath: file,
       dependencies: false,
-      allowMissingRepository: true,
-      rewriteRelativeLinks: false,
+      // README links and images point to the public repository, so the marketplace page shows them.
+      rewriteRelativeLinks: true,
     });
     const result = await verifyArchive(file, 'vsix', root);
     console.log(`Verified extension archive: ${result.files} files.`);

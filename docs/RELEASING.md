@@ -11,7 +11,7 @@ npm run package
 npm run package:source
 ```
 
-Outputs are a versioned VSIX and a versioned source ZIP under `dist/`. The source ZIP includes contribution and agent guidance, tests, build scripts and lockfile. It excludes `.git`, installed dependencies, caches, environment files, editor settings and generated evidence. The VSIX includes only the declared extension files. Both paths validate their archive contents before completion.
+Outputs are a versioned VSIX and a versioned source ZIP under `dist/`. The source ZIP includes contribution and agent guidance, tests, build scripts and lockfile. It excludes `.git`, installed dependencies, caches, environment files, editor settings and generated evidence. The VSIX includes only the declared extension files. Its README and CHANGELOG links and images point to the public repository (`…/raw/HEAD/` and `…/blob/HEAD/`) so the marketplace page shows them; removing exactly those prefixes must give back the reviewed source. Both paths validate their archive contents before completion.
 
 ## Distribution decisions still required
 

@@ -160,9 +160,29 @@ function privateTerms() {
     .filter(Boolean);
 }
 
+// vsce points relative README and CHANGELOG links at the public repository. Removing exactly
+// those prefixes must give back the reviewed source; any other difference is rejected.
+function repositoryPrefixes(manifest) {
+  const url =
+    typeof manifest.repository === 'string' ? manifest.repository : manifest.repository?.url;
+  const match = /^https:\/\/github\.com\/([\w.-]+\/[\w.-]+?)(?:\.git)?$/.exec(url || '');
+  return match ? ['raw', 'blob'].map((kind) => `https://github.com/${match[1]}/${kind}/HEAD/`) : [];
+}
+function sameAsSource(source, bytes, expected, prefixes) {
+  if (bytes.equals(expected)) return true;
+  if (!['README.md', 'CHANGELOG.md'].includes(source) || !prefixes.length) return false;
+  const original = expected.toString('utf8');
+  if (prefixes.some((prefix) => original.includes(prefix))) return false;
+  let text = bytes.toString('utf8');
+  for (const prefix of prefixes) text = text.split(prefix).join('');
+  return text === original;
+}
+
 function verifyArchive(file, kind, root, terms = privateTerms()) {
   const allowed = new Set(checkRepository(root, terms));
-  const version = JSON.parse(fs.readFileSync(path.join(root, 'package.json'))).version;
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'package.json'))),
+    version = manifest.version,
+    prefixes = kind === 'vsix' ? repositoryPrefixes(manifest) : [];
   const sourcePrefix = `agent-monitor-${version}/`;
   return new Promise((resolve, reject) => {
     yauzl.open(file, { lazyEntries: true, autoClose: true }, (error, zip) => {
@@ -227,7 +247,9 @@ function verifyArchive(file, kind, root, terms = privateTerms()) {
                 const bytes = Buffer.concat(chunks);
                 if (source) {
                   checkFile(source, bytes, terms);
-                  if (!bytes.equals(fs.readFileSync(path.join(root, source))))
+                  if (
+                    !sameAsSource(source, bytes, fs.readFileSync(path.join(root, source)), prefixes)
+                  )
                     throw Error('Archive differs from reviewed source: ' + source);
                 } else if (sensitiveRules(bytes.toString('utf8'), terms).length)
                   throw Error('Sensitive archive metadata');
@@ -276,5 +298,7 @@ module.exports = {
   checkFile,
   checkLinks,
   checkRepository,
+  repositoryPrefixes,
+  sameAsSource,
   verifyArchive,
 };
