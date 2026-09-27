@@ -1,0 +1,158 @@
+{
+  "name": "agent-monitor",
+  "displayName": "Agent Monitor",
+  "description": "Track Codex, Claude Code and Cursor Agent activity, inspect evidence and images, and direct each chat's focus from your editor.",
+  "icon": "media/icon.png",
+  "version": "0.14.0",
+  "publisher": "wojake",
+  "preview": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mov-bx-0xb800/agent-monitor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mov-bx-0xb800/agent-monitor/issues"
+  },
+  "homepage": "https://github.com/mov-bx-0xb800/agent-monitor#readme",
+  "qna": "https://github.com/mov-bx-0xb800/agent-monitor/issues",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0",
+    "node": ">=20"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "agents",
+    "codex",
+    "claude",
+    "images",
+    "activity"
+  ],
+  "main": "./src/extension.js",
+  "extensionKind": [
+    "ui"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onWebviewPanel:agentMonitor.editor"
+  ],
+  "capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Connecting agent hooks requires a trusted local workspace."
+    }
+  },
+  "files": [
+    "src/**",
+    "media/**",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "docs/**",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "AGENTS.md"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "test:ui": "node test/render.cjs",
+    "package": "node scripts/package.cjs",
+    "check": "node scripts/check-repository.cjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "package:source": "node scripts/source-package.cjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@vscode/vsce": "3.7.1",
+    "axe-core": "4.13.0",
+    "prettier": "3.9.9",
+    "yauzl": "2.10.0",
+    "yazl": "2.5.1"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "agentMonitor.open",
+        "title": "Agent Monitor: Open"
+      },
+      {
+        "command": "agentMonitor.openInEditor",
+        "title": "Agent Monitor: Open in Main Window"
+      },
+      {
+        "command": "agentMonitor.connect",
+        "title": "Agent Monitor: Connect Agents"
+      },
+      {
+        "command": "agentMonitor.disconnect",
+        "title": "Agent Monitor: Disconnect Agents"
+      },
+      {
+        "command": "agentMonitor.pause",
+        "title": "Agent Monitor: Pause or Resume Collection"
+      }
+    ],
+    "configuration": {
+      "title": "Agent Monitor",
+      "properties": {
+        "agentMonitor.openOnStartup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show Agent Monitor once each time this editor window starts. Closing it keeps it closed until the next startup."
+        },
+        "agentMonitor.nodePath": {
+          "type": "string",
+          "default": "",
+          "scope": "machine",
+          "description": "Optional absolute path to Node.js 20 or newer for agent hooks. Otherwise detect Node on PATH."
+        },
+        "agentMonitor.motion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Animate changes you make, such as switching views, picking a chat, opening evidence and stepping through images, plus score changes and new images. Turn off to show every change instantly. Motion is also off when the editor's Reduce Motion setting is on or the operating system asks for reduced motion."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "agentMonitorPrimary",
+          "title": "Agent Monitor",
+          "icon": "media/monitor.svg",
+          "when": "!agentMonitor.secondary"
+        }
+      ],
+      "secondarySidebar": [
+        {
+          "id": "agentMonitorSecondary",
+          "title": "Agent Monitor",
+          "icon": "media/monitor.svg",
+          "when": "agentMonitor.secondary"
+        }
+      ]
+    },
+    "views": {
+      "agentMonitorPrimary": [
+        {
+          "type": "webview",
+          "id": "agentMonitor.primary",
+          "name": "Agent Monitor",
+          "when": "!agentMonitor.secondary"
+        }
+      ],
+      "agentMonitorSecondary": [
+        {
+          "type": "webview",
+          "id": "agentMonitor.secondary",
+          "name": "Agent Monitor",
+          "when": "agentMonitor.secondary"
+        }
+      ]
+    }
+  },
+  "private": true
+}

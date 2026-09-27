@@ -1,0 +1,1608 @@
+/* Editor-native styling. Colours come from the host theme; fallbacks derive from the
+   foreground and background so contrast holds in any theme. Colour encodes data only:
+   category meters show score and recency, green shows observed activity, the focus colour
+   shows selection and keyboard focus, and red shows unseen images.
+
+   Geometry: every surface uses one inner inset (12px) and the page gutter (12px), so text,
+   meters, buttons and icons share the same left and right edges. Spacing steps are 4, 8, 12
+   and 16px. Icon buttons carry 4px of internal padding and take a -4px margin wherever they
+   meet an edge, so their glyphs line up with text. */
+:root {
+  color-scheme: light dark;
+  --gutter: 12px;
+  --inset: 12px;
+  --bg: var(--vscode-sideBar-background, #181818);
+  --fg: var(--vscode-sideBar-foreground, var(--vscode-foreground, #cccccc));
+  --muted: var(--vscode-descriptionForeground, #9d9d9d);
+  --line: color-mix(in srgb, var(--fg) 13%, transparent);
+  --line-strong: var(--vscode-widget-border, color-mix(in srgb, var(--fg) 24%, transparent));
+  --subtle: color-mix(in srgb, var(--fg) 6%, transparent);
+  --subtle-hover: color-mix(in srgb, var(--fg) 10%, transparent);
+  --track: color-mix(in srgb, var(--fg) 12%, transparent);
+  --hover: var(--vscode-list-hoverBackground, color-mix(in srgb, var(--fg) 7%, var(--bg)));
+  --selected-surface: color-mix(in srgb, var(--fg) 11%, var(--bg));
+  --focus: var(--vscode-focusBorder, #0078d4);
+  --link: var(--vscode-textLink-foreground, #3794ff);
+  --live: var(--vscode-charts-green, #48a65a);
+  --warn: var(--vscode-editorWarning-foreground, #cca700);
+  --button: var(--vscode-button-background, #0e639c);
+  --button-fg: var(--vscode-button-foreground, #ffffff);
+  --button-hover: var(--vscode-button-hoverBackground, #1177bb);
+  --button2: var(--vscode-button-secondaryBackground, color-mix(in srgb, var(--fg) 12%, var(--bg)));
+  --button2-fg: var(--vscode-button-secondaryForeground, var(--fg));
+  --button2-hover: var(
+    --vscode-button-secondaryHoverBackground,
+    color-mix(in srgb, var(--fg) 18%, var(--bg))
+  );
+  --toolbar-hover: var(
+    --vscode-toolbar-hoverBackground,
+    color-mix(in srgb, var(--fg) 12%, transparent)
+  );
+  --badge: var(--vscode-badge-background, color-mix(in srgb, var(--fg) 22%, var(--bg)));
+  --badge-fg: var(--vscode-badge-foreground, var(--fg));
+  --mono: var(--vscode-editor-font-family, ui-monospace, Menlo, Consolas, monospace);
+  --notify: #d1242f;
+  --notify-fg: #ffffff;
+  --radius: 4px;
+  --radius-surface: 6px;
+  /* Motion: short and one-shot. The setting, the editor's Reduce Motion and the OS preference
+     all collapse these to zero. */
+  --motion-fast: 120ms;
+  --motion: 180ms;
+  --motion-slow: 320ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+}
+[data-motion='off'] {
+  --motion-fast: 0ms;
+  --motion: 0ms;
+  --motion-slow: 0ms;
+}
+[data-motion='off'] *,
+[data-motion='off'] *::before,
+[data-motion='off'] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion: 0ms;
+    --motion-slow: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 0 var(--gutter) 16px;
+  font: var(--vscode-font-size, 13px) / 1.45 var(--vscode-font-family, system-ui, sans-serif);
+  color: var(--fg);
+  background: var(--bg);
+  overflow-wrap: anywhere;
+}
+h1,
+h2,
+h3,
+p,
+dl,
+dd {
+  margin: 0;
+}
+[hidden] {
+  display: none !important;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.caption {
+  color: var(--muted);
+  font-size: 11px;
+}
+[data-at] {
+  white-space: nowrap;
+}
+.muted {
+  color: var(--muted);
+  font-size: 12px;
+}
+.icon {
+  display: inline-block;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  fill: currentColor;
+  pointer-events: none;
+}
+.provider-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+/* One-shot motion vocabulary. Entrance classes are added only for changes a person makes. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+}
+@keyframes bump {
+  40% {
+    transform: scale(1.25);
+  }
+}
+@keyframes slide-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+@keyframes slide-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+}
+@keyframes meter-grow {
+  from {
+    width: calc(var(--from, 0) * 1%);
+  }
+}
+@keyframes ping {
+  from {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+@keyframes tick {
+  from {
+    transform: rotate(45deg) scale(0.4);
+  }
+}
+.enter {
+  animation: rise var(--motion) var(--ease);
+}
+
+/* Controls. The bare button is a reset; push buttons opt in with a class. */
+button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  background: none;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-fast) var(--ease),
+    border-color var(--motion-fast) var(--ease),
+    color var(--motion-fast) var(--ease),
+    opacity var(--motion-fast) var(--ease),
+    transform var(--motion-fast) var(--ease);
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+:focus-visible {
+  outline: 1px solid var(--focus);
+  outline-offset: 2px;
+}
+.primary,
+.secondary {
+  justify-content: center;
+  min-height: 28px;
+  padding: 4px 12px;
+  border: 1px solid var(--vscode-button-border, transparent);
+  font-size: 12px;
+  line-height: 18px;
+}
+.primary:not(:disabled):active,
+.secondary:not(:disabled):active {
+  transform: scale(0.98);
+}
+.primary {
+  background: var(--button);
+  color: var(--button-fg);
+}
+.primary:not(:disabled):hover {
+  background: var(--button-hover);
+}
+.secondary {
+  background: var(--button2);
+  color: var(--button2-fg);
+}
+.secondary:not(:disabled):hover {
+  background: var(--button2-hover);
+}
+.icon-button {
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  color: var(--vscode-icon-foreground, var(--fg));
+}
+.icon-button:not(:disabled):hover {
+  background: var(--toolbar-hover);
+}
+.icon-button:focus-visible {
+  outline-offset: -1px;
+}
+.text-button {
+  min-height: 24px;
+  padding: 2px 4px;
+  margin-inline: -4px;
+  color: var(--link);
+  font-size: 12px;
+}
+.text-button:not(:disabled):hover {
+  text-decoration: underline;
+}
+.text-button:disabled {
+  color: var(--muted);
+  opacity: 1;
+}
+summary {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  min-height: 24px;
+  margin-left: -2px;
+  list-style: none;
+  cursor: pointer;
+  font-size: 12px;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+summary > .icon {
+  transition: transform var(--motion-fast) var(--ease);
+}
+details[open] > summary > .icon {
+  transform: rotate(90deg);
+}
+/* Unseen images: a notification count, not an inventory. */
+.notify-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--notify-fg);
+  background: var(--notify);
+}
+.notify-badge.bump {
+  animation: bump var(--motion-slow) var(--ease);
+}
+.live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  border-radius: 50%;
+  vertical-align: 1px;
+  background: var(--live);
+}
+
+/* Header: glyphs and text meet the page gutter on both sides. */
+.monitor-toolbar {
+  margin: 0 -4px;
+  padding: 8px 0 4px;
+}
+.utility-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.utility-actions {
+  display: flex;
+  gap: 4px;
+}
+.window-button {
+  min-height: 24px;
+  padding: 2px 8px 2px 4px;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--fg);
+}
+.window-button:hover {
+  background: var(--toolbar-hover);
+}
+.window-button .icon {
+  transform: rotate(-45deg);
+}
+[data-surface='editor'] .window-button {
+  visibility: hidden;
+}
+#help-panel {
+  margin: 8px 4px 12px;
+  padding: var(--inset);
+  border-radius: var(--radius-surface);
+  font-size: 12px;
+  background: var(--subtle);
+}
+#help-panel dt {
+  font-weight: 600;
+}
+#help-panel dd {
+  margin-bottom: 8px;
+  color: var(--muted);
+}
+#help-panel dd:last-child {
+  margin-bottom: 0;
+}
+
+/* Tabs: full width, icons, and one underline that slides to the open view. */
+nav {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0 0 16px;
+  border-bottom: 1px solid var(--line);
+}
+nav::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 50%;
+  height: 2px;
+  background: var(--vscode-panelTitle-activeBorder, var(--focus));
+  transform: translateX(calc(var(--tab, 0) * 100%));
+  transition: transform var(--motion) var(--ease);
+}
+nav button {
+  justify-content: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 8px 4px;
+  border-radius: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+nav button:hover {
+  color: var(--fg);
+  background: var(--hover);
+}
+nav button[aria-selected='true'] {
+  color: var(--fg);
+}
+nav button .icon {
+  width: 14px;
+  height: 14px;
+}
+nav button:focus-visible {
+  outline-offset: -2px;
+}
+
+/* Messages keep one position under the tabs in every view. */
+.message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  margin: 0 0 16px;
+  padding: 6px var(--inset);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  font-size: 12px;
+  /* A calm neutral surface: the theme's validation colours are too loud for routine notices. */
+  background: var(--subtle);
+  animation: rise var(--motion) var(--ease);
+}
+.message > [data-icon='info'] svg {
+  color: var(--vscode-notificationsInfoIcon-foreground, var(--vscode-descriptionForeground));
+}
+.message > span:not(.icon) {
+  flex: 1;
+  min-width: 0;
+}
+.message > .icon-button {
+  margin: -4px -4px -4px 0;
+}
+.message.paused {
+  padding-block: 4px;
+  border-color: var(--line-strong);
+  background: var(--subtle);
+}
+/* Deliberately bold dark text on light amber in every theme; forced colours restore the system palette. */
+.setup-warning {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin: 0 0 16px;
+  padding: 10px var(--inset);
+  border: 1px solid #a57517;
+  border-radius: var(--radius);
+  color: #302410;
+  background: #fff0c7;
+  animation: rise var(--motion) var(--ease);
+}
+.setup-warning > .icon {
+  align-self: start;
+  margin-top: 1px;
+  color: #6b4700;
+}
+.setup-warning > div {
+  flex: 1 1 calc(100% - 26px);
+  min-width: 0;
+}
+.setup-warning strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+}
+.setup-warning p {
+  font-size: 12px;
+  font-weight: 600;
+}
+.setup-warning button {
+  flex: none;
+  min-height: 28px;
+  padding: 4px 12px;
+  border: 1px solid #a57517;
+  font-size: 12px;
+  font-weight: 600;
+  color: #302410;
+  background: #fff8e7;
+}
+.setup-warning button:hover {
+  background: #ffe8a8;
+}
+.setup-warning-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin-left: 26px;
+}
+.setup-warning .warning-link {
+  min-height: 24px;
+  padding: 0 4px;
+  margin-inline: -4px;
+  border: 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: underline;
+  background: none;
+}
+.setup-warning .warning-link:hover {
+  background: none;
+  text-decoration-thickness: 2px;
+}
+
+/* Sections: 24px title rows, 8px to their content, 16px between sections. */
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  min-height: 24px;
+  margin: 0 0 8px;
+}
+.section-title h2 {
+  font-size: 12px;
+  font-weight: 600;
+}
+.title-group {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+.empty {
+  max-width: 46ch;
+  padding: 16px 0 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.empty strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+}
+.empty button {
+  margin-top: 12px;
+}
+
+/* Chat identity: provider mark, tinted by recent activity, with a presence dot while active. */
+.chat-avatar {
+  position: relative;
+  display: grid;
+  flex: 0 0 22px;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--live) calc(var(--heat, 0) * 24%), var(--subtle));
+}
+.chat-avatar .provider-icon {
+  width: 14px;
+  height: 14px;
+}
+.presence {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--live);
+  box-shadow: 0 0 0 2px var(--ring, var(--bg));
+}
+/* One ring when a chat goes from idle to active; never a loop. */
+.presence.ping::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--live);
+  animation: ping 800ms var(--ease-out) both;
+}
+#chat-summary {
+  margin: 0 0 16px;
+}
+#chat-summary:empty {
+  display: none;
+}
+#chat-summary > .empty {
+  padding-top: 0;
+}
+.summary-head {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+}
+.summary-head .chat-avatar {
+  margin-top: -2px;
+}
+.summary-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+.chat-rename {
+  margin: -3px -4px -3px 0;
+}
+.chat-line {
+  margin: 4px 0 0 30px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.chat-fault {
+  margin: 4px 0 0 30px;
+  font-size: 11px;
+  color: var(--vscode-errorForeground, var(--warn));
+}
+
+/* Category colour appears only as a meter: length is the score, strength is recency. */
+.focus-card,
+.meter {
+  --category-ink: var(--category, var(--muted));
+}
+.vscode-light :is(.focus-card, .meter),
+.vscode-high-contrast-light :is(.focus-card, .meter) {
+  --category-ink: color-mix(in oklab, var(--category, var(--muted)) 72%, black);
+}
+
+/* Chat strip */
+#chat-picker {
+  min-width: 0;
+  margin: 0 0 16px;
+}
+.chat-picker-controls {
+  display: flex;
+  gap: 4px;
+  margin-right: -4px;
+}
+#chat-strip {
+  display: flex;
+  gap: 8px;
+  margin: 0 -2px;
+  padding: 2px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: 2px;
+  scrollbar-width: thin;
+}
+.chat-choice {
+  --ring: var(--bg);
+  /* Contains the visually hidden label so off-screen items cannot widen the page. */
+  position: relative;
+  /* The provider mark hangs in its own column; both text lines share one left edge. */
+  display: grid;
+  flex: 0 0 min(224px, calc(100% - 40px));
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-content: start;
+  gap: 4px 8px;
+  min-width: 0;
+  padding: 10px var(--inset);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-surface);
+}
+.chat-choice:hover {
+  --ring: var(--hover);
+  background: var(--hover);
+}
+.chat-choice[aria-pressed='true'] {
+  --ring: var(--selected-surface);
+  border-color: var(--focus);
+  background: var(--selected-surface);
+}
+.choice-head {
+  display: contents;
+}
+.choice-head .chat-avatar {
+  flex-basis: 20px;
+  width: 20px;
+  height: 20px;
+}
+.choice-head .caption {
+  align-self: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.chat-choice-title {
+  grid-column: 2;
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 17px;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.chat-choice.all-chats {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding-inline: 16px;
+}
+
+/* Area tiles. Tiles in a row share row lines (subgrid), so names, meters, states and buttons
+   stay level even when one name wraps. Two across only when each tile has room. */
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(144px, 1fr));
+  gap: 8px;
+}
+.tile-grid > p {
+  grid-column: 1 / -1;
+}
+.focus-card {
+  --heat: 0;
+  --score: 0;
+  position: relative;
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  min-width: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-surface);
+  background: var(--subtle);
+  transition:
+    background-color var(--motion-fast) var(--ease),
+    border-color var(--motion-fast) var(--ease);
+}
+.focus-card:hover {
+  background: var(--subtle-hover);
+}
+.focus-card:has(.focus-info[aria-expanded='true']) {
+  border-color: var(--line-strong);
+  background: var(--selected-surface);
+}
+.focus-info {
+  display: grid;
+  grid-row: span 3;
+  grid-template-rows: subgrid;
+  align-items: start;
+  width: 100%;
+  padding: var(--inset) var(--inset) 0;
+  border-radius: var(--radius-surface) var(--radius-surface) 0 0;
+  text-align: left;
+}
+.focus-info:focus-visible {
+  outline-offset: -1px;
+}
+/* The name row leaves room for the corner handle; nothing else does. */
+.area-top {
+  display: block;
+  padding-right: 20px;
+}
+.area-top strong {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 17px;
+  overflow-wrap: break-word;
+}
+.meter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: center;
+}
+.meter {
+  display: block;
+  flex: 1;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--track);
+}
+.meter > span {
+  display: block;
+  width: calc(var(--score, 0) * 1%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--category-ink);
+  opacity: calc(0.4 + var(--heat, 0) * 0.6);
+}
+.meter.grow > span {
+  animation: meter-grow var(--motion-slow) var(--ease) both;
+}
+.count {
+  flex: none;
+  /* Room for 100, so every meter in the grid ends at the same point. */
+  min-width: 3ch;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 17px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.count.none {
+  font-weight: 400;
+  color: var(--muted);
+}
+.tile-state {
+  display: block;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--muted);
+}
+/* One wide, neutral Focus here per area, level across the row; Cancel shares the line. */
+.focus-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  gap: 8px;
+  padding: 0 var(--inset) var(--inset);
+}
+.focus-actions > button {
+  flex: 1 1 auto;
+}
+.focus-button .icon {
+  width: 14px;
+  height: 14px;
+}
+.focus-actions > .caption {
+  flex-basis: 100%;
+  font-size: 11px;
+  text-align: center;
+}
+.area-handle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: var(--muted);
+  cursor: grab;
+  opacity: 0;
+}
+.focus-card:hover .area-handle,
+.area-handle:focus-visible {
+  opacity: 1;
+}
+@media (hover: none) {
+  .area-handle {
+    opacity: 1;
+  }
+}
+.area-handle:active {
+  cursor: grabbing;
+}
+.arranging [data-zone] {
+  outline: 1px dashed var(--line-strong);
+  outline-offset: 4px;
+}
+.drop-target {
+  outline: 1px dashed var(--focus) !important;
+  outline-offset: -1px;
+}
+#more-areas {
+  margin-top: 16px;
+}
+#more-areas > summary {
+  color: var(--fg);
+}
+#extra-groups {
+  margin-top: 8px;
+}
+#more-areas[open] > #extra-groups {
+  animation: rise var(--motion) var(--ease);
+}
+
+/* Evidence expands below the selected row and shares its surface. */
+#detail {
+  grid-column: 1 / -1;
+  padding: var(--inset);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-surface);
+  background: var(--selected-surface);
+}
+.detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: -4px -4px 0 0;
+}
+.detail-head h3 {
+  font-size: 13px;
+  font-weight: 600;
+}
+.detail-desc {
+  font-size: 12px;
+  color: var(--muted);
+}
+.evidence {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.evidence-summary {
+  font-size: 12px;
+}
+.evidence .caption {
+  font-size: 11px;
+}
+.evidence-path {
+  display: block;
+  /* The background hangs outside the column so the path's text lines up with the text above. */
+  margin: 4px -8px;
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  font: 11px / 1.5 var(--mono);
+  background: var(--vscode-textCodeBlock-background, var(--subtle));
+}
+.score-explanation {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.score-explanation > summary {
+  color: var(--fg);
+}
+.score-explanation p {
+  margin: 4px 0 0 18px;
+}
+
+/* Images. Only the picture itself opens a tab; the frame around it does nothing, and the
+   arrows have generous hit areas so near misses still land on them. */
+.image-frame {
+  border-radius: var(--radius-surface);
+  outline: 2px solid transparent;
+  outline-offset: 1px;
+  background: var(--subtle);
+  transition: outline-color var(--motion-slow) var(--ease);
+}
+.image-box {
+  position: relative;
+}
+.image-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  padding: var(--inset);
+}
+.image-view > .image-missing {
+  padding: 16px 0;
+}
+.image-open {
+  display: block;
+  max-width: 100%;
+  border-radius: var(--radius);
+  line-height: 0;
+  cursor: zoom-in;
+}
+.image-open:focus-visible {
+  outline-offset: 2px;
+}
+.image-open img,
+.image-open canvas {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 55vh;
+  object-fit: contain;
+  border-radius: var(--radius);
+}
+.image-open.fade-in {
+  animation: fade var(--motion) var(--ease);
+}
+.image-open.from-right {
+  animation: slide-from-right var(--motion) var(--ease);
+}
+.image-open.from-left {
+  animation: slide-from-left var(--motion) var(--ease);
+}
+.image-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid color-mix(in srgb, var(--fg) 45%, transparent);
+  border-radius: 50%;
+  color: var(--fg);
+  background: color-mix(in srgb, var(--vscode-editorWidget-background, var(--bg)) 90%, transparent);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 22%),
+    0 2px 6px rgb(0 0 0 / 28%);
+  transform: translateY(-50%);
+}
+.image-nav::before {
+  content: '';
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+}
+.image-nav:not(:disabled):hover {
+  background: var(--vscode-editorWidget-background, var(--bg));
+  border-color: color-mix(in srgb, var(--fg) 70%, transparent);
+  transform: translateY(-50%) scale(1.06);
+}
+.image-nav:not(:disabled):active {
+  transform: translateY(-50%) scale(0.96);
+}
+.image-nav:disabled {
+  visibility: hidden;
+}
+.image-nav.previous {
+  left: 8px;
+}
+.image-nav.next {
+  right: 8px;
+}
+.image-meta {
+  padding: 0 var(--inset) var(--inset);
+}
+.image-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 24px;
+  font-size: 12px;
+}
+.image-label > span {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+}
+.image-label > .icon-button:last-child {
+  margin-right: -4px;
+}
+.image-state {
+  margin-top: 2px;
+  font-size: 12px;
+}
+.image-by {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+#thumbnails {
+  display: flex;
+  gap: 8px;
+  margin: 0 -3px 8px;
+  padding: 3px 3px 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+#thumbnails button {
+  position: relative;
+  display: flex;
+  flex: 0 0 76px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  width: 76px;
+  padding: 4px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-surface);
+  outline: 2px solid transparent;
+  outline-offset: 1px;
+  background: var(--subtle);
+  transition:
+    background-color var(--motion-fast) var(--ease),
+    border-color var(--motion-fast) var(--ease),
+    outline-color var(--motion-slow) var(--ease);
+}
+#thumbnails button:hover {
+  background: var(--subtle-hover);
+}
+#thumbnails button[aria-current='true'] {
+  border-color: var(--focus);
+}
+.image-frame.fresh,
+#thumbnails button.fresh {
+  outline-color: var(--notify);
+}
+#thumbnails button:focus-visible {
+  outline: 1px solid var(--focus);
+}
+#thumbnails img,
+#thumbnails canvas,
+#thumbnails .thumb-placeholder {
+  display: block;
+  width: 100%;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 2px;
+}
+#thumbnails .caption {
+  display: block;
+  white-space: nowrap;
+  text-align: center;
+}
+#thumbnails button.in-use::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--live);
+  box-shadow: 0 0 0 2px var(--bg);
+}
+.toggle {
+  min-height: 24px;
+  padding: 2px;
+  margin-right: -2px;
+  font-size: 12px;
+}
+.check-box {
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--vscode-checkbox-border, var(--line-strong));
+  border-radius: 3px;
+  background: var(--vscode-checkbox-background, transparent);
+  transition:
+    background-color var(--motion-fast) var(--ease),
+    border-color var(--motion-fast) var(--ease);
+}
+.toggle[aria-pressed='true'] .check-box {
+  border-color: var(--button);
+  background: var(--button);
+}
+.toggle[aria-pressed='true'] .check-box::after {
+  content: '';
+  width: 4px;
+  height: 8px;
+  margin-top: -2px;
+  border: solid var(--button-fg);
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+  animation: tick var(--motion-fast) var(--ease);
+}
+
+/* Agent setup dialog: a 16px inset throughout. */
+dialog {
+  width: calc(100% - 16px);
+  max-width: 460px;
+  max-height: calc(100vh - 24px);
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  color: var(--fg);
+  background: var(--vscode-editorWidget-background, var(--bg));
+  box-shadow: 0 8px 28px var(--vscode-widget-shadow, rgb(0 0 0 / 36%));
+}
+dialog[open] {
+  animation: pop var(--motion) var(--ease);
+}
+dialog::backdrop {
+  background: rgb(0 0 0 / 35%);
+}
+dialog[open]::backdrop {
+  animation: fade var(--motion) var(--ease);
+}
+.dialog-heading {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 8px 12px 8px 16px;
+  border-bottom: 1px solid var(--line);
+  background: inherit;
+}
+.dialog-heading h2 {
+  font-size: 13px;
+  font-weight: 600;
+}
+.setup-feedback {
+  margin: 12px 16px 0;
+  padding: 8px var(--inset);
+  border: 1px solid var(--vscode-inputValidation-infoBorder, var(--line-strong));
+  border-radius: var(--radius);
+  font-size: 12px;
+  background: var(--vscode-inputValidation-infoBackground, var(--subtle));
+}
+.agent-setup {
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.agent-setup:last-child {
+  border-bottom: 0;
+}
+.agent-setup.ignored h3,
+.agent-setup.ignored .provider-icon {
+  color: var(--muted);
+}
+.agent-setup-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  min-height: 20px;
+}
+.agent-setup-head h3 {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+}
+.agent-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.agent-state::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--muted);
+  border-radius: 50%;
+}
+.agent-state.ok::before {
+  border-color: var(--live);
+  background: var(--live);
+}
+.agent-state.warn::before {
+  border-color: var(--warn);
+  background: var(--warn);
+}
+.agent-setup > .caption {
+  display: block;
+  margin: 4px 0 0 24px;
+}
+.setup-step,
+.setup-fault {
+  margin-top: 8px;
+  font-size: 12px;
+}
+.setup-step {
+  color: var(--muted);
+}
+.setup-fault {
+  color: var(--vscode-errorForeground, var(--warn));
+}
+.setup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 12px;
+}
+.setup-actions:empty {
+  display: none;
+}
+.dialog-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--line);
+}
+
+/* Opened in the main editor area: keep a readable measure and let the grid widen. */
+[data-surface='editor'] {
+  --gutter: 24px;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-top: 8px;
+}
+[data-surface='editor'] .tile-grid {
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+}
+[data-surface='editor'] .image-open img,
+[data-surface='editor'] .image-open canvas {
+  max-height: 70vh;
+}
+@media (max-width: 259px) {
+  :root {
+    --gutter: 10px;
+    --inset: 10px;
+  }
+}
+@media (forced-colors: active) {
+  .focus-card,
+  .chat-choice,
+  .image-frame,
+  #thumbnails button,
+  #detail,
+  #help-panel,
+  .message,
+  .setup-warning,
+  dialog {
+    border: 1px solid CanvasText;
+  }
+  .chat-choice[aria-pressed='true'],
+  #thumbnails button[aria-current='true'],
+  .focus-card:has(.focus-info[aria-expanded='true']) {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+  nav::after {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+  .image-nav,
+  .notify-badge {
+    border: 1px solid CanvasText;
+  }
+  .image-frame.fresh,
+  #thumbnails button.fresh {
+    outline-color: Highlight;
+  }
+  .meter {
+    border: 1px solid CanvasText;
+  }
+  .meter > span,
+  .presence,
+  .live-dot,
+  .agent-state::before,
+  #thumbnails button.in-use::after {
+    forced-color-adjust: none;
+    background: CanvasText;
+    opacity: 1;
+  }
+  .check-box {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+  }
+  .toggle[aria-pressed='true'] .check-box {
+    background: Highlight;
+  }
+  .icon {
+    forced-color-adjust: auto;
+  }
+  .setup-warning,
+  .setup-warning strong,
+  .setup-warning p,
+  .setup-warning button {
+    color: CanvasText;
+    background: Canvas;
+  }
+}
+
+/* Reduced previews of large or animated images, and the way to the original. */
+.image-quality {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+}
+.image-quality[hidden] {
+  display: none;
+}
+.image-placeholder {
+  display: block;
+  max-width: 32ch;
+  padding: 24px 12px;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--vscode-descriptionForeground);
+}
+#thumbnails .thumb-placeholder {
+  background: color-mix(in srgb, var(--fg) 8%, transparent);
+}
+
+/* Project stakes: a compact three-way choice above the areas. */
+.stakes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 0 0 12px;
+}
+.stakes-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.segmented button {
+  min-height: 24px;
+  padding: 2px 10px;
+  border: 0;
+  border-left: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--fg);
+  font-size: 12px;
+}
+.segmented button:first-child {
+  border-left: 0;
+}
+/* The editor's own toggle treatment (as for Match Case), not a filled primary button. */
+.segmented button[aria-checked='true'] {
+  background: var(
+    --vscode-inputOption-activeBackground,
+    color-mix(in srgb, var(--focus) 18%, transparent)
+  );
+  color: var(--vscode-inputOption-activeForeground, var(--fg));
+  box-shadow: inset 0 0 0 1px var(--vscode-inputOption-activeBorder, var(--focus));
+  font-weight: 600;
+}
+.segmented button:not([aria-checked='true']):not(:disabled):hover {
+  background: var(--vscode-list-hoverBackground, color-mix(in srgb, var(--fg) 8%, transparent));
+}
+.segmented button:focus-visible {
+  outline-offset: -2px;
+}
+.stakes-note {
+  flex-basis: 100%;
+  margin: 0;
+}
+/* Custom areas. */
+.tag {
+  margin-left: 6px;
+  padding: 0 5px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 14px;
+  color: var(--vscode-descriptionForeground);
+}
+.sensitive {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--vscode-editorWarning-foreground, var(--fg));
+}
+.sensitive svg {
+  width: 12px;
+  height: 12px;
+}
+.custom-card {
+  margin-top: 12px;
+  padding: var(--inset);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+}
+.custom-card h3 {
+  margin: 0 0 4px;
+  font-size: 13px;
+}
+.custom-card .caption {
+  margin: 0 0 8px;
+}
+.custom-report {
+  margin: 0 0 8px;
+  padding-left: 18px;
+  font-size: 12px;
+}
+.custom-report li {
+  margin: 2px 0;
+  overflow-wrap: anywhere;
+}
+.custom-report .problem {
+  color: var(--vscode-editorWarning-foreground, var(--fg));
+}
+.custom-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.custom-card:focus-visible {
+  outline: 1px solid var(--focus);
+  outline-offset: -1px;
+}
+.custom-card.creating {
+  border-style: solid;
+  border-color: var(--line-strong);
+}
+.area-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+}
+.area-form .field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.area-form .field-label {
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+}
+.area-form .optional {
+  margin-left: 6px;
+  color: var(--muted);
+  font-weight: 400;
+}
+.area-form .field-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.area-form .field-error {
+  margin: 0;
+  color: var(--vscode-errorForeground, #f48771);
+  font-size: 12px;
+}
+.area-form input[type='text'],
+.area-form textarea,
+.area-form select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid var(--vscode-input-border, var(--line-strong));
+  border-radius: var(--radius);
+  background: var(--vscode-input-background, var(--subtle));
+  color: var(--vscode-input-foreground, var(--fg));
+  font: inherit;
+}
+.area-form textarea {
+  min-height: 44px;
+  resize: vertical;
+}
+.area-form select {
+  border-color: var(--vscode-dropdown-border, var(--line-strong));
+  background: var(--vscode-dropdown-background, var(--subtle));
+  color: var(--vscode-dropdown-foreground, var(--fg));
+}
+.area-form ::placeholder {
+  color: var(--vscode-input-placeholderForeground, var(--muted));
+  opacity: 1;
+}
+.area-form input[type='text']:focus,
+.area-form textarea:focus,
+.area-form select:focus {
+  outline: 1px solid var(--focus);
+  outline-offset: -1px;
+  border-color: var(--focus);
+}
+.area-form [aria-invalid='true'] {
+  border-color: var(--vscode-inputValidation-errorBorder, var(--vscode-errorForeground, #f48771));
+}
+.choice-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 6px;
+}
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.choice:hover {
+  background: var(--hover);
+}
+.choice:has(input:checked) {
+  border-color: var(--focus);
+  background: var(--subtle);
+}
+.choice input {
+  margin: 2px 0 0;
+  accent-color: var(--button);
+}
+.choice input:focus-visible {
+  outline: 1px solid var(--focus);
+  outline-offset: 2px;
+}
+.choice-text {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.choice-text .caption {
+  margin: 0;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+@media (forced-colors: active) {
+  .choice:has(input:checked) {
+    border-color: Highlight;
+  }
+  .segmented button[aria-checked='true'] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+}

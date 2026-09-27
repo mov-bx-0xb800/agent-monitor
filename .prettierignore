@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.evidence/
+coverage/
+package-lock.json
+media/icons.js
+docs/CODICONS-LICENSE.txt
+media/providers.js
+docs/LOBE-ICONS-LICENSE.txt

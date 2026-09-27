@@ -1,0 +1,114 @@
+[
+  {
+    "id": "security",
+    "label": "Security",
+    "colour": "#b18cf5",
+    "concerns": ["security"],
+    "core": true,
+    "description": "Access control and protection against misuse.",
+    "checks": ["security"]
+  },
+  {
+    "id": "performance",
+    "label": "Performance",
+    "colour": "#e9af50",
+    "concerns": ["performance"],
+    "core": true,
+    "description": "Latency, throughput and resource use.",
+    "checks": ["benchmark"]
+  },
+  {
+    "id": "ux",
+    "label": "UI / UX",
+    "colour": "#69aaff",
+    "contexts": ["experience"],
+    "concerns": ["accessibility"],
+    "core": true,
+    "description": "Interface clarity, interaction and accessibility.",
+    "checks": ["accessibility"]
+  },
+  {
+    "id": "backend",
+    "label": "Functionality",
+    "colour": "#49b9aa",
+    "contexts": ["application", "devices", "automation"],
+    "core": true,
+    "description": "Intended behaviour and rules."
+  },
+  {
+    "id": "data",
+    "label": "Data",
+    "colour": "#68bc7b",
+    "contexts": ["data"],
+    "core": true,
+    "description": "Data correctness, storage, transformation and transfer.",
+    "concerns": ["integrity"]
+  },
+  {
+    "id": "testing",
+    "label": "Testing",
+    "colour": "#729ff2",
+    "concerns": ["testing"],
+    "core": true,
+    "description": "Checks that exercise behaviour and catch regressions.",
+    "checks": ["test"]
+  },
+  {
+    "id": "reliability",
+    "label": "Reliability",
+    "colour": "#57b3ce",
+    "concerns": ["reliability"],
+    "description": "Behaviour through failures, interruptions and recovery.",
+    "stakes": {
+      "critical": {
+        "concerns": ["safety"]
+      }
+    }
+  },
+  {
+    "id": "architecture",
+    "label": "Code quality",
+    "colour": "#a995ee",
+    "description": "Structure, clarity and maintainability.",
+    "concerns": ["maintainability", "architecture"],
+    "checks": ["static"]
+  },
+  {
+    "id": "delivery",
+    "label": "Infrastructure & delivery",
+    "colour": "#879bef",
+    "contexts": ["platform"],
+    "concerns": ["operability"],
+    "description": "Builds, releases, configuration and operations.",
+    "checks": ["build"]
+  },
+  {
+    "id": "analytics",
+    "label": "Analytics",
+    "colour": "#dcb25c",
+    "concerns": ["analytics"],
+    "description": "Accuracy and usefulness of product or business measurement."
+  },
+  {
+    "id": "privacy",
+    "label": "Privacy & compliance",
+    "colour": "#d28cbb",
+    "concerns": ["privacy", "compliance"],
+    "description": "Data-use constraints and applicable obligations."
+  },
+  {
+    "id": "product",
+    "label": "Product & requirements",
+    "colour": "#d99e75",
+    "concerns": ["requirements"],
+    "description": "The intended user need, requirements and scope."
+  },
+  {
+    "id": "docs",
+    "label": "Documentation",
+    "colour": "#9aaec2",
+    "concerns": ["documentation"],
+    "description": "Accurate explanations, setup and usage instructions.",
+    "checks": ["docs"]
+  }
+]
