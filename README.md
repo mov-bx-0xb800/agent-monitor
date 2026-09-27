@@ -76,4 +76,4 @@ Start with [CONTRIBUTING.md](CONTRIBUTING.md) for setup, checks and change expec
 - [Design and category principles](docs/DESIGN.md)
 - [Release preparation](docs/RELEASING.md)
 
-Source code is [MIT licensed](LICENSE). Bundled icons have separate [attribution and licensing](docs/THIRD-PARTY.md). Marketplace listings will use the publisher ID `wojake`; none is published yet. Report bugs in [GitHub Issues](https://github.com/mov-bx-0xb800/agent-monitor/issues) and security problems privately as described in the [security policy](SECURITY.md). No publication command or automated release is included.
+Source code is [MIT licensed](LICENSE). Bundled icons have separate [attribution and licensing](docs/THIRD-PARTY.md). Marketplace listings will use the ID `wojake.agent-monitor-focus` and the name “Agent Monitor: Focus & Images”; none is published yet. Report bugs in [GitHub Issues](https://github.com/mov-bx-0xb800/agent-monitor/issues) and security problems privately as described in the [security policy](SECURITY.md). No publication command or automated release is included.

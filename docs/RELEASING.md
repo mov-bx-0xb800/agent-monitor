@@ -17,7 +17,7 @@ Outputs are a versioned VSIX and a versioned source ZIP under `dist/`. The sourc
 
 - The public repository is `https://github.com/mov-bx-0xb800/agent-monitor`, with private vulnerability reporting enabled; the security policy points to it.
 - The marketplace publisher ID is `wojake` on both Open VSX and the VS Code Marketplace. Create both publisher accounts and accept their agreements before the first publish; the ID is permanent once used.
-- Choose a distinct display name before publishing: “Agent Monitor” is already used by other listings.
+- The extension ID is `wojake.agent-monitor-focus` and the listing name is “Agent Monitor: Focus & Images”, because the Marketplace already has an extension named `agent-monitor` with the display name “Agent Monitor”. The product is still called Agent Monitor inside the editor.
 - Complete native acceptance for the host/platform combinations the release will claim. Publish limitations beside those claims.
 - Review the MIT source licence and bundled icon attribution. Keep third-party notices in distributed artifacts.
 - Inspect visible screenshot content and the exact source archive. Pattern checks cannot guarantee the absence of every secret or identifying detail.

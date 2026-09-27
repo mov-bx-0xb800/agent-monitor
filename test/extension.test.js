@@ -403,7 +403,7 @@ test('setup actions target the chosen agent, reuse terminals and respect workspa
   await receive({ action: 'settings' });
   assert(
     commands.some(
-      (c) => c[0] === 'workbench.action.openSettings' && c[1] === '@ext:wojake.agent-monitor',
+      (c) => c[0] === 'workbench.action.openSettings' && c[1] === '@ext:wojake.agent-monitor-focus',
     ),
   );
   await receive({ action: 'review-hooks', agent: 'codex; arbitrary' });

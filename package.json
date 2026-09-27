@@ -1,6 +1,6 @@
 {
-  "name": "agent-monitor",
-  "displayName": "Agent Monitor",
+  "name": "agent-monitor-focus",
+  "displayName": "Agent Monitor: Focus & Images",
   "description": "Track Codex, Claude Code and Cursor Agent activity, inspect evidence and images, and direct each chat's focus from your editor.",
   "icon": "media/icon.png",
   "version": "0.14.0",

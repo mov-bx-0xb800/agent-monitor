@@ -1098,7 +1098,7 @@ async function createController(vscode, ctx, loc = locations()) {
       } else if (message.action === 'settings')
         await vscode.commands.executeCommand(
           'workbench.action.openSettings',
-          '@ext:wojake.agent-monitor',
+          '@ext:wojake.agent-monitor-focus',
         );
       else if (message.action === 'remove' && typeof message.id === 'string') {
         const removed = store.withLock(root, () => {
